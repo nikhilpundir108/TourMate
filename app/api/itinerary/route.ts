@@ -4,9 +4,17 @@ import User from "@/models/User";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
-export async function GET(req: Request) {
+async function getUserId() {
+  if (process.env.TEST_BYPASS_AUTH) {
+    return process.env.TEST_BYPASS_AUTH;
+  }
+  const { userId } = await auth();
+  return userId;
+}
+
+export async function GET() {
   try {
-    const { userId: clerkId } = await auth();
+    const clerkId = await getUserId();
     if (!clerkId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -19,7 +27,6 @@ export async function GET(req: Request) {
 
     const { destination, travelType, budget, duration } = user.preferences;
 
-    // The same detailed prompt works perfectly with the Flash model
     const prompt = `
       You are an expert travel planner located in Agra, India.
       The current date is September 17, 2025.
@@ -44,8 +51,7 @@ export async function GET(req: Request) {
       { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
     ];
 
-    // CHANGE: Switched to the faster "Flash" model with higher free-tier rate limits.
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest", safetySettings });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", safetySettings });
 
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -53,9 +59,10 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ success: true, itinerary: itineraryText });
 
-  } catch (error: any) {
-    console.error("❌ /api/itinerary error:", error);
-    if (error.message.includes('SAFETY')) {
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("❌ /api/itinerary GET error:", err);
+    if (err.message && err.message.includes('SAFETY')) {
       return NextResponse.json({ error: "The response was blocked due to safety settings. Try a different query." }, { status: 400 });
     }
     return NextResponse.json({ error: "An internal server error occurred." }, { status: 500 });

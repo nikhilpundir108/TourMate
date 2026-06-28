@@ -37,8 +37,9 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ success: true, user });
-  } catch (error: any) {
-    console.error("❌ /api/preferences error:", error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("❌ /api/preferences error:", err);
     return NextResponse.json({ error: "An internal server error occurred." }, { status: 500 });
   }
 }

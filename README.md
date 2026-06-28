@@ -4,49 +4,43 @@ Tour Mate is a Next.js-based web application that facilitates travel planning by
 
 ## Application Workflow
 
-The diagram below outlines the core user flows, including authentication, preference-based itinerary generation via AI, and the interactive multi-step planning dashboard.
+The diagram below outlines the core user flows, including authentication, preference-based itinerary generation via AI, and direct destination searches.
 
 ```mermaid
 graph TD
-    Start[User Visits Tour Mate] --> Auth{Clerk Authenticated?}
-    Auth -- No --> SignIn[Sign In Modal]
-    Auth -- Yes --> Dashboard[Dashboard]
-    
-    Dashboard --> Path1[1. Set Travel Preferences]
-    Path1 --> SavePref[Save to MongoDB User Schema]
-    SavePref --> RequestItinerary[Fetch /api/itinerary]
-    RequestItinerary --> GeminiAPI[Gemini 1.5 Flash Model]
-    GeminiAPI --> MarkdownRender[Render Day-by-Day Markdown Itinerary]
+    Start[User Visits Home Route '/'] --> Auth{Clerk Authenticated?}
+    Auth -- No --> LandingPage[Home Landing View]
+    Auth -- Yes --> HomeView[Home Landing View with User Session]
 
-    Dashboard --> Path2[2. Interactive Multi-Step Planner]
-    Path2 --> Step1[Input Trip Details: duration, dates, budget]
-    Step1 --> Step2[Choose Mood Vibe: Adventure, Relaxing, Cultural]
-    Step2 --> Step3[Filter Destinations by Budget & Mood]
-    Step3 --> Step4[Select Travel Mode]
-    Step3 --> Path3[3. Direct Destination Search /destinations]
-    Path3 --> BrowseDest[Browse All Destinations]
-    BrowseDest --> DetailedView[View Destination Map, Local Homestays, Restaurants, and Vendors]
-    Step4 --> Step5[Choose Lodging & Food Preferences]
-    Step5 --> Step6[Select Target Attractions]
-    Step6 --> Step7[Select & Save Plan Profile: Balanced Explorer, Adventure, Comfort]
+    LandingPage --> ClickPlan[Click 'Start Planning'] --> TriggerSignIn[Clerk Sign In Modal]
+    LandingPage --> ClickExplore[Click 'Explore Destinations'] --> DestinationsRoute[Destinations Route '/destinations']
+
+    HomeView --> ClickPlanAuth[Click 'Start Planning'] --> PreferencesRoute[Preferences Route '/preferences']
+    HomeView --> ClickExploreAuth[Click 'Explore Destinations'] --> DestinationsRoute
+
+    PreferencesRoute --> SavePref[POST '/api/preferences' Saves User Preferences to MongoDB]
+    SavePref --> RedirectItinerary[Redirect to Itinerary Route '/itinerary']
+    RedirectItinerary --> FetchItinerary[GET '/api/itinerary' Calls Gemini 2.5 Flash]
+    FetchItinerary --> RenderMarkdown[Render Markdown Guide on UI]
+
+    DestinationsRoute --> FetchDestinations[GET '/api/destinations' Fetches Destinations List]
+    FetchDestinations --> GridList[Render Destinations Grid]
+    GridList --> SelectDest[Click Destination Card] --> DetailRoute[Destination Details Route '/destinations/:id']
+    DetailRoute --> FetchDetails[GET '/api/destinations/:id' Queries Details]
+    FetchDetails --> RenderMap[Render Coordinates on Leaflet Map]
+    FetchDetails --> QueryServices[Fetch Associated Local Homestays, Restaurants, and Vendors]
+    QueryServices --> RenderOfferings[Display Service Cards and Contact Info]
 ```
 
 ## Key Features
 
 ### Custom Itinerary Generation
-The application integrates the Google Gemini 1.5 Flash model to compile day-by-day travel schedules based on user-defined trip settings. These itineraries are generated dynamically and rendered directly as structured markdown guides.
-
-### Multi-Step Interactive Planner
-An interactive planning interface tracks user decisions step-by-step to customize a travel package:
-- Trip configurations (length, budget, travel party size).
-- Mood-based matching to surface relevant destination recommendations.
-- Interactive selection of transport methods, accommodation types, and target locations to visit.
-- Generation of three Distinct plan profiles (Balanced Explorer, Adventure Seeker, Comfort Focused) showing cost estimates.
+The application integrates the Google Gemini 2.5 Flash model to compile day-by-day travel schedules based on user-defined trip settings. These itineraries are generated dynamically and rendered directly as structured markdown guides.
 
 ### Destination Discovery
 Users can explore individual destination routes showing local, verified offerings:
 - Leaflet-based interactive maps pinpointing destination coordinates.
-- Curated listings of local homestays (with descriptions and pricing).
+- Curated listings of local homestays (with descriptions and pricing) dynamically linked to destinations.
 - Regional restaurants categorized by cuisine.
 - Local vendors and service providers (guides, transport providers) to support community tourism.
 
@@ -61,7 +55,7 @@ Users can explore individual destination routes showing local, verified offering
 - **Styling**: Tailwind CSS, PostCSS
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: Clerk
-- **AI Integrations**: Google Generative AI SDK (Gemini 1.5 Flash)
+- **AI Integrations**: Google Generative AI SDK (Gemini 2.5 Flash)
 - **Maps**: Leaflet and React Leaflet
 - **Icons**: Lucide React
 
@@ -72,46 +66,27 @@ Users can explore individual destination routes showing local, verified offering
 │   ├── (auth)/                  # Clerk authentication sign-in and sign-up pages
 │   ├── api/
 │   │   ├── destinations/        # Fetch destination list and detailed query routes
-│   │   ├── generatePlan/        # Handles initial Gemini queries for local recommendations
-│   │   ├── itinerary/           # Generates the detailed day-by-day markdown text
-│   │   ├── preferences/         # CRUD actions for user travel settings
-│   │   └── users/               # Legacy local user management endpoint
+│   │   ├── itinerary/           # Generates day-by-day itineraries based on preferences
+│   │   └── preferences/         # CRUD actions for user travel settings
 │   ├── destinations/            # Destination collection and details pages
 │   ├── itinerary/               # Page containing the final AI-generated itinerary
-│   ├── preferences/             # Preferences input form
-│   ├── suggestions/             # Checked list for selecting favorite activities
-│   └── travel/                  # Dashboard and multi-step travel wizard
+│   └── preferences/             # Preferences input form
 ├── components/
-│   ├── steps/                   # View components for the individual wizard stages
-│   │   ├── AccommodationFood.tsx
-│   │   ├── DestinationRecommendations.tsx
-│   │   ├── MoodSelection.tsx
-│   │   ├── PlacesToVisit.tsx
-│   │   ├── PlanGeneration.tsx
-│   │   ├── TravelModeSelection.tsx
-│   │   └── TripDetailsForm.tsx
-│   ├── Homestays.tsx            # Renders lodging cards
 │   ├── Map.tsx                  # Integrates React Leaflet maps
-│   ├── MyPlans.tsx              # Renders saved itineraries
-│   ├── Navbar.tsx               # Main header navigation bar
-│   ├── Restaurants.tsx          # Renders dining lists
-│   ├── TravelPlanner.tsx        # Multi-step state management coordinator
-│   └── Vendors.tsx              # Renders local services lists
+│   └── Navbar.tsx               # Main header navigation bar
 ├── lib/
 │   ├── auth.ts                  # Helper module validating Clerk session states
 │   └── mongodb.ts               # Database connector
 ├── models/                      # MongoDB Schemas
 │   ├── Destination.ts
 │   ├── Homestay.ts
-│   ├── Plan.ts
 │   ├── Restaurant.ts
 │   ├── User.ts
-│   ├── UserPreferences.ts
 │   └── Vendor.ts
 ├── scripts/
 │   └── seed.ts                  # Database reset and mock data seeding script
 └── types/
-    └── travel.ts                # Typings for itineraries, plans, and profiles
+    └── travel.ts                # Typings for itineraries and profiles
 ```
 
 ## Database Schema Definitions
@@ -124,9 +99,6 @@ Users can explore individual destination routes showing local, verified offering
 
 3. **Homestay (Homestay.ts)**, **Restaurant (Restaurant.ts)**, **Vendor (Vendor.ts)**
    Models for local services linked back to a specific `destinationId`. They structure items like pricing ranges, cuisine types, contact numbers, and service descriptions.
-
-4. **Plan (Plan.ts)**
-   A composite model storing user selections, the raw suggestions response returned by the LLM, and the compiled markdown itinerary body.
 
 ## Local Configuration and Run Guide
 
@@ -141,8 +113,8 @@ CLERK_SECRET_KEY=your_clerk_secret_key
 
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/travel
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/travel
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/destinations
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/destinations
 
 GOOGLE_API_KEY=your_google_gemini_api_key
 ```
