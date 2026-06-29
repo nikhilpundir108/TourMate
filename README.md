@@ -106,7 +106,7 @@ Users can explore individual destination routes showing local, verified offering
 Configure a `.env.local` file in your root folder using the keys listed below:
 
 ```env
-MONGODB_URI = "mongodb://localhost:27017/smart_tourism"
+MONGODB_URI = "mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/smartTourism?retryWrites=true&w=majority"
 
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
@@ -126,7 +126,7 @@ GOOGLE_API_KEY=your_google_gemini_api_key
    npm install
    ```
 
-2. Seed database records with mock destinations and business listings:
+2. Seed database records with mock destinations and business listings (this automatically loads environment variables from `.env.local`):
    ```bash
    npm run seed
    ```

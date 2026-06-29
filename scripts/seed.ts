@@ -47,6 +47,18 @@ async function seed() {
       image: "https://images.unsplash.com/photo-1548013146-72479768bada",
       location: { lat: 10.8505, lng: 76.2711 },
     },
+    {
+      name: "Agra",
+      description: "Home of the Taj Mahal, rich in Mughal history and heritage.",
+      image: "https://images.unsplash.com/photo-1564507592333-c60657eea523",
+      location: { lat: 27.1751, lng: 78.0421 },
+    },
+    {
+      name: "Ladakh",
+      description: "High-altitude cold desert, famous for pristine lakes, monasteries, and adventure.",
+      image: "https://images.unsplash.com/photo-1581791538302-03537b9c97bf",
+      location: { lat: 34.1526, lng: 77.5771 },
+    },
   ]);
 
   // 🏡 Homestays
@@ -75,6 +87,14 @@ async function seed() {
     { name: "Backwater Bliss", description: "Stay in a traditional Kerala houseboat.", price: 5000, image: "https://images.unsplash.com/photo-1543353071-873f17a7a088", destinationId: destinations[4]._id },
     { name: "Green Palm Retreat", description: "Stay among lush green landscapes.", price: 2500, image: "https://images.unsplash.com/photo-1519821172141-b5d8bdf9b3f8", destinationId: destinations[4]._id },
     { name: "Coconut Lagoon Stay", description: "Eco-friendly lakeside homestay.", price: 2800, image: "https://images.unsplash.com/photo-1499696010181-8d1d6c2211f1", destinationId: destinations[4]._id },
+
+    // Agra
+    { name: "Taj View Homestay", description: "Cosy homestay with a view of the Taj Mahal.", price: 2200, image: "https://images.unsplash.com/photo-1566073771259-6a8506099945", destinationId: destinations[5]._id },
+    { name: "Mughal Heritage Villa", description: "Luxury rooms close to the heritage monuments.", price: 3500, image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4", destinationId: destinations[5]._id },
+
+    // Ladakh
+    { name: "Himalayan Homestay Leh", description: "Cozy local homestay in Leh town.", price: 1800, image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab", destinationId: destinations[6]._id },
+    { name: "Stok Palace View Stay", description: "Scenic mountain view stay near the palace.", price: 2800, image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9", destinationId: destinations[6]._id },
   ]);
 
   // 🍴 Restaurants
@@ -98,6 +118,14 @@ async function seed() {
     { name: "Kerala Spice House", description: "Traditional Kerala sadhya meal.", cuisine: "South Indian", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836", destinationId: destinations[4]._id },
     { name: "Backwater Café", description: "Lakeview coffee spot.", cuisine: "Cafe", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836", destinationId: destinations[4]._id },
     { name: "Coconut Curry", description: "Seafood curries with coconut base.", cuisine: "Seafood", image: "https://images.unsplash.com/photo-1506354666786-959d6d497f1a", destinationId: destinations[4]._id },
+
+    // Agra
+    { name: "Peshawri Agra", description: "Famous North-West Frontier cuisine.", cuisine: "Mughlai", image: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae", destinationId: destinations[5]._id },
+    { name: "Panchi Petha Café", description: "Authentic local sweet shops and quick bites.", cuisine: "Sweets & Cafe", image: "https://images.unsplash.com/photo-1552566626-52f8b828add9", destinationId: destinations[5]._id },
+
+    // Ladakh
+    { name: "Tibetan Kitchen", description: "Authentic local Tibetan and Ladakhi cuisine.", cuisine: "Tibetan", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d", destinationId: destinations[6]._id },
+    { name: "Leh Zatar Cafe", description: "Warm cafe with spectacular valley views.", cuisine: "Cafe", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24", destinationId: destinations[6]._id },
   ]);
 
   // 🛍 Vendors
@@ -121,9 +149,17 @@ async function seed() {
     { name: "Guide Mohan", service: "Backwater tours", contact: "+91-9988775566", image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e", destinationId: destinations[4]._id },
     { name: "Ayurveda Doctor Anju", service: "Traditional Ayurvedic treatment", contact: "+91-7766558899", image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1", destinationId: destinations[4]._id },
     { name: "Houseboat Operator", service: "Rent traditional Kerala houseboats", contact: "+91-6655447788", image: "https://images.unsplash.com/photo-1517841905240-472988babdf9", destinationId: destinations[4]._id },
+
+    // Agra
+    { name: "Guide Sanjay", service: "Professional Taj Mahal historian guide", contact: "+91-9897001122", image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e", destinationId: destinations[5]._id },
+    { name: "Marble Crafts Ravi", service: "Exquisite inlay marble designs and replicas", contact: "+91-9897003344", image: "https://images.unsplash.com/photo-1517841905240-472988babdf9", destinationId: destinations[5]._id },
+
+    // Ladakh
+    { name: "Guide Tundup", service: "Trekking and local monastery specialist", contact: "+91-9877005566", image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e", destinationId: destinations[6]._id },
+    { name: "Ladakh Bike Rentals", service: "Rent Royal Enfield bikes for mountain passes", contact: "+91-9877007788", image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1", destinationId: destinations[6]._id },
   ]);
 
-  console.log("✅ Database seeded with 5 destinations and related data!");
+  console.log("✅ Database seeded with 7 destinations and related data!");
   mongoose.connection.close();
 }
 
